@@ -1,37 +1,37 @@
 # bfs used in Edmonds-Karp
 # this version returns a single valid path from source to sink
-def bfs(C, F, source, sink):
+def bfs(G, F, source, sink):
 	queue = [source]
 	paths = {source: []}
 	while queue:
 		u = queue.pop(0)
-		for v in C[u].keys():
-			if C[u][v][0] - F[u][v] > 0 and v not in paths:
+		for v in G[u].keys():
+			if G[u][v][0] - F[u][v] > 0 and v not in paths:
 				paths[v] = paths[u] + [(u,v)]
 				if v == sink:
 					return paths[v]
 				queue.append(v)
 	return None
 
-# Edmonds-Karp for general max flow on graphs
+# Edmonds-Karp for max cardinality bipartite matching
 # Input graph for max cardinality bipartite matching has source connected
 # to all elements in set X, and all elements of set Y connected to sink.
 # All edges have capacity = 1 (for max cardinality)
 # The output is a triple (M,A,B) where M is a dictionary mapping
 # members of V to their matches in U, A is the part of the maximum
 # matching in U, and B is the part of the MIS in V
-def edmonds_karp(C, source, sink):
-	n = len(C) # C is the capacity matrix
+def edmonds_karp(G, source, sink):
+	n = len(G) # C is the capacity matrix
 	F = [[0] * n for i in xrange(n)]
 	# residual capacity from u to v is C[u][v] - F[u][v]
 
 	# keep augmenting paths from source until there is no path from it to sink
 	while True:
-		path = bfs(C, F, source, sink)
+		path = bfs(G, F, source, sink)
 		if not path:
 			break
 		# traverse path to find smallest capacity
-		flow = min(C[u][v][0] - F[u][v] for u,v in path)
+		flow = min(G[u][v][0] - F[u][v] for u,v in path)
 		# traverse path to update flow
 		for u,v in path:
 			F[u][v] += flow
@@ -68,7 +68,7 @@ def hopcroft_karp(graph):
 				break
 
 	# try to correct the matching to have disjoint edges
-	while 1:
+	while True:
 		# structure residual graph into layers
 		# pred[u] gives the neighbor in the previous layer for u in U
 		# preds[v] gives a list of neighbors in the previous layer for v in V
@@ -122,3 +122,30 @@ def hopcroft_karp(graph):
 			return 0
 
 		for v in unmatched: recurse(v)
+
+# Dijkstra's shortest paths for a modified Hungarian algorithm
+# returns a path of least cost from source to sink, given as a list of
+# edges (u, v)
+def dijkstra(G, F, source, sink):
+	# number of vertices
+	n = len(C)
+	# initialize
+	dist = [sys.maxint for i in xrange(n)]
+	paths = {source: []}
+	dist[source] = 0
+	# priority queue as a dictionary
+	heap = {source: 0}
+	# keep approximating distance until all paths tried
+	while heap:
+		u = min(heap, key=heap.get)
+		del heap[u]
+		for v in G[u].keys():
+			if G[u][v][0] - F[u][v] > 0:
+				tempdist = sys.maxint
+				if dist[u] != sys.maxint:
+					tempdist = dist[u] + G[u][v][1]
+				if dist[v] > tempdist:
+					dist[v] = tempdist
+					paths[v] = paths[u] + [(u,v)]
+					heap[v] = dist[v]
+	return paths[sink]
