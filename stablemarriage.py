@@ -43,7 +43,7 @@ def check(engaged):
                 return False
     return True
 
-def matchmaker():
+def matcher():
     guysfree = guys[:]
     engaged  = {}
     guyprefers2 = copy.deepcopy(guyprefers)
