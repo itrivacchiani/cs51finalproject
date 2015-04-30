@@ -1,16 +1,25 @@
-import copy
+import copy, sys, csv
 
-resident_prefs = {'emily' : ['Stanford', 'Harvard', 'Berkeley', 'Yale', 'Princeton'],
-                  'jenn' : ['Harvard', 'Stanford', 'Yale', 'Princeton', 'Berkeley'],
-                  'angela' : ['Harvard', 'Princeton', 'Stanford', 'Yale', 'Berkeley'],
-                  'elise' : ['Princeton', 'Stanford', 'Yale', 'Berkeley', 'Harvard'],
-                  'pascale' : ['Yale', 'Stanford', 'Harvard', 'Berkeley', 'Princeton'],
-                  'sam' : ['Yale', 'Stanford', 'Harvard', 'Berkeley', 'Princeton']}
-hospital_prefs = {'Stanford' : (1, ['emily', 'angela', 'elise', 'jenn', 'sam', 'pascale']),
-                  'Harvard' : (2, ['pascale', 'emily', 'sam','angela', 'elise', 'jenn']),
-                  'Berkeley' : (1, ['jenn', 'angela', 'emily', 'elise', 'pascale']),
-                  'Princeton' : (1, ['pascale', 'sam','angela', 'emily', 'jenn', 'elise']),
-                  'Yale' : (1, ['sam','jenn', 'elise', 'pascale', 'emily', 'angela'])}
+csv_f = csv.reader(open('preferences.csv'))
+
+problem = csv_f.next()[0]
+marriage = (problem == "stable_marriage")
+num_res = int(csv_f.next()[0])
+num_hosp = int(csv_f.next()[0])
+
+resident_prefs = {}
+hospital_prefs = {}
+for i in xrange(0,num_res):
+    s1 = csv_f.next()[0]
+    s2 = csv_f.next()[0]
+    resident_prefs[s1] = s2.split(' ')
+for i in xrange(0,num_hosp):
+    s1 = csv_f.next()[0]
+    s2 = csv_f.next()[0]
+    if marriage:
+      hospital_prefs[s1] = (1, s2.split(' '))
+    else:
+      hospital_prefs[s1.split(' ')[0]] = (int(s1.split(' ')[1]), s2.split(' '))
 
 def matcher():
   # Initialize all residents and hospitals to free
@@ -36,7 +45,10 @@ def matcher():
 
       if (len(fav_hosp_reslist) <= fav_hosp_cap):
         # can just add resident to list
-        print(" %s placed at %s" % (res, fav_hosp))
+        if marriage:
+          print("%s engaged to %s" % (res, fav_hosp))
+        else:
+          print("%s placed at %s" % (res, fav_hosp))
       else:
         # hospital's residence list is over capacity
         # need to reject one resident
@@ -45,16 +57,24 @@ def matcher():
         fav_hosp_reslist.sort(key=lambda x: hospital_prefs[fav_hosp][1].index(x))
         rejected_res = fav_hosp_reslist[-1]
         fav_hosp_reslist.pop()
-        print(" %s rejected by %s" % (rejected_res, fav_hosp))
+          print("%s rejected by %s" % (rejected_res, fav_hosp))
         rejected_res_pref = resident_prefs2[rejected_res]
         if rejected_res_pref:
           resident_free.append(rejected_res)
+        else:
+          if marriage:
+            print("%s rejected by everyone" % rejected_res)
+          else:
+            print("Resident %s rejected by all hospitals " % rejected_res)
 
   print(" \n .......Final Results.......")
   for k,v in hospital_actual.items():
-    print(" \n Hospital of %s | Capacity of %s" % (k, v[0]))
-    print(" Residents:")
-    for r in v[1]:
-      print(" %s " % r)
+    if marriage:
+      print("\n %s is married to %s" % (k,v[1]))
+    else:
+      print("\n Hospital of %s | Capacity of %s" % (k, v[0]))
+      print(" Residents:")
+      for r in v[1]:
+        print("%s " % r)
 
 def checker():
