@@ -123,12 +123,13 @@ def hopcroft_karp(graph):
 
 		for v in unmatched: recurse(v)
 
+# TODO this is only necessary for successive shortest paths
 # Dijkstra's shortest paths for a modified Hungarian algorithm
 # returns a path of least cost from source to sink, given as a list of
 # edges (u, v)
 def dijkstra(G, F, source, sink):
 	# number of vertices
-	n = len(C)
+	n = len(G)
 	# initialize
 	dist = [sys.maxint for i in xrange(n)]
 	paths = {source: []}
