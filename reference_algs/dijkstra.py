@@ -2,6 +2,7 @@ import sys
 from sys import stdin
 
 g = [{1: (0, 1), 2: (0, 10)},{2: (0, 100), 3: (0, 100)},{3: (0, 1)},{}]
+g2 = [{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,50)},{6: (2,0)},{6:(1,0)},{0: (1,0), 1: (1,0), 2: (1,0)},{}]
 
 def dijkstra(graph, start, end):
 	# number of vertices
@@ -29,4 +30,4 @@ def dijkstra(graph, start, end):
 
 	return paths[end]
 
-print dijkstra(g, 0, 3)
+print dijkstra(g2, 5, 6)
