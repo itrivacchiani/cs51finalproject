@@ -129,7 +129,7 @@ def hopcroft_karp(graph):
 # edges (u, v)
 def dijkstra(G, F, source, sink):
 	# number of vertices
-	n = len(C)
+	n = len(G)
 	# initialize
 	dist = [sys.maxint for i in xrange(n)]
 	paths = {source: []}
