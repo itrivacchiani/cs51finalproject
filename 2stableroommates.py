@@ -43,11 +43,15 @@ def GetPersonRank(x,i):
   r = rank[y][x]
   return (y,r)
 
-leftperson = {} # person 'x' is currently proposing to
-leftrank = {} # rank of that person
-rightperson = {} # person 'x' holds a proposal for
-rightrank = {} # rank of that person
+best = {} # current best roommate 'x' is currently proposing to
+bestrank = {} # rank of x's most feasible choice on x's list
+worst = {} # person whose proposal x has but isn't top choice
+worstrank = {} # rank of worst's in x's list
 holds_proposal = {} # boolean
+second = {} # the next best person that x would accept
+secondrank = {} # second's rank on x's list
+secondperception = {} # rank of x on second[x]'s preference list, 
+                      # ie. how second[x] perceives x
 
 # PhaseI creates plausible semi-matchings 
 # between roommates
@@ -57,29 +61,29 @@ def phaseI():
   for k in people.keys():
     n = len(people.keys())
     holds_proposal[k] = False
-    rightperson[k] = k 
-    rightrank[k] = n
-    leftrank[k] = 1
+    worst[k] = k 
+    worstrank[k] = n
+    bestrank[k] = 1
   # creates semi-engagements (plausible matches)
   for k in people.keys():
     proposer = k
     while True: 
-      if leftrank[proposer] == len(people.keys()):
+      if bestrank[proposer] == len(people.keys()):
           break
-      (next, rank) = GetPersonRank(proposer, leftrank[proposer])
-      while (rank > rightrank[next]):
-        leftrank[proposer] = leftrank[proposer] + 1 
-        # You've reached yourself in the leftrank :(, therefore forever alone
-        (next, rank) = GetPersonRank(proposer, leftrank[proposer])
-      previous = rightperson[next]
-      rightrank[next] = rank
-      rightperson[next] = proposer
-      leftperson[proposer] = next
+      (next, rank) = GetPersonRank(proposer, bestrank[proposer])
+      while (rank > worstrank[next]):
+        bestrank[proposer] = bestrank[proposer] + 1 
+        # You've reached yourself in the bestrank :(, therefore forever alone
+        (next, rank) = GetPersonRank(proposer, bestrank[proposer])
+      previous = worst[next]
+      worstrank[next] = rank
+      worst[next] = proposer
+      best[proposer] = next
       proposer = previous 
       if (holds_proposal[next] == False): 
         break 
     holds_proposal[next] = True
-    if (leftrank[proposer] == n):
+    if (bestrank[proposer] == n):
       return False # can only be engaged to self, no stable match
   return True # move onto phaseII, there may be stable match
 
@@ -88,25 +92,25 @@ cycle = []
 def seekCycle(): 
 
   for k in people.keys():
-    if (leftrank[k] < rightrank[k]):
+    if (bestrank[k] < worstrank[k]):
       break
-  if (leftrank[k] >= rightrank[k]):
+  if (bestrank[k] >= worstrank[k]):
     return (0,0,"")
   else :
     last = 1 
     while True:
       cycle[last] = k
       last = last + 1 
-      p = leftrank[k]
+      p = bestrank[k]
       while True: 
         p = p + 1 
         (y,r) = GetPersonRank(k,p)
-        if (r <= rightrank[y]):
+        if (r <= worstrank[y]):
           break
       secondrank[k] = p
-      secondperson[k] = y
-      secondrightrank[k] = r
-      k = rightperson[secondperson[x]]
+      second[k] = y
+      secondperception[k] = r
+      k = worst[second[x]]
       if (k in cycle):
         break 
     last = last - 1
@@ -127,11 +131,11 @@ def phaseII():
     else:
       cycle2 = cycle[first:last]
       for i in range(cycle2):
-        leftrank[k] = secondrank[k]
-        rightrank[leftperson[k]] = secondrightrank[k]
-        rightperson[leftperson[k]] = k
+        bestrank[k] = secondrank[k]
+        worstrank[best[k]] = secondperception[k]
+        worst[best[k]] = k
       for i in range(cycle2):
-        if (leftrank[k] > rightrank[k]):
+        if (bestrank[k] > worstrank[k]):
           solution_possible = False 
   return solution_found
 
@@ -146,12 +150,12 @@ else:
     print("There is no solution.")
     os.system("python menu.py")
   else:   
-    print("%i"%len(leftperson))
-    for k in leftperson.keys():
+    print("%i"%len(best))
+    for k in best.keys():
 
       print("Host")
       print("%s" % k)
       print("Preference")
-      print("%s" % leftperson[k])
+      print("%s" % best[k])
 
 
