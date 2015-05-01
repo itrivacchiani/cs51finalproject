@@ -64,9 +64,12 @@ def phaseI():
   for k in people.keys():
     proposer = k
     while True: 
+      if leftrank[proposer] == len(people.keys()):
+          break
       (next, rank) = GetPersonRank(proposer, leftrank[proposer])
       while (rank > rightrank[next]):
         leftrank[proposer] = leftrank[proposer] + 1 
+        # You've reached yourself in the leftrank :(, therefore forever alone
         (next, rank) = GetPersonRank(proposer, leftrank[proposer])
       previous = rightperson[next]
       rightrank[next] = rank
