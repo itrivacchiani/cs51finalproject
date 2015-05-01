@@ -63,13 +63,14 @@ def phaseI():
     holds_proposal[k] = False
     worst[k] = k 
     worstrank[k] = n
-    bestrank[k] = 1
+    bestrank[k] = 0
   # creates semi-engagements (plausible matches)
   for k in people.keys():
     proposer = k
     while True: 
       if bestrank[proposer] == len(people.keys()):
           break
+      # next is the "best" person and rank is the perception
       (next, rank) = GetPersonRank(proposer, bestrank[proposer])
       while (rank > worstrank[next]):
         bestrank[proposer] = bestrank[proposer] + 1 
@@ -139,9 +140,6 @@ def phaseII():
           solution_possible = False 
   return solution_found
 
-print("%s"%(phaseI()))
-print("%s"%(phaseII()))
-
 if not phaseI():
   print("There is no possible stable roommates arrangement")
   os.system("python menu.py")
@@ -150,12 +148,7 @@ else:
     print("There is no solution.")
     os.system("python menu.py")
   else:   
-    print("%i"%len(best))
+    print("\n Rooming Results \n")
     for k in best.keys():
-
-      print("Host")
-      print("%s" % k)
-      print("Preference")
-      print("%s" % best[k])
-
-
+      print("Person: %s" % k)
+      print("Best Roommate Match: %s \n" % best[k])
