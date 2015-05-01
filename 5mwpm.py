@@ -16,7 +16,7 @@ def calculateScore(l1, l2):
         score += n - abs(int(l1[i]) - int(l2[i]))
     return score
 
-execfile("graph.py")
+execfile("roommateproblem/graph.py")
 
 # represent the problem as an undirected graph
 G = Graph()
