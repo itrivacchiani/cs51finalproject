@@ -5,32 +5,32 @@ def augment_blossom(b, v):
         t = parents[t]
     if isinstance(t, Blossom):
         augment_blossom(t, v)
-    i = j = b.subblossoms.index(t)
+    indx1 = indx2 = b.subblossoms.index(t)
 
     # determine direction
-    if i % 2 == 1:
-        j -= len(b.subblossoms)
-        jstep = 1
+    if indx1 % 2 == 1:
+        indx2 -= len(b.subblossoms)
+        direc = 1
     else:
-        jstep = -1
+        direc = -1
 
     # find base
-    while j != 0:
-        j += jstep
-        t = b.subblossoms[j]
-        if jstep == 1:
-            w, x = b.edges[j]
+    while indx2 != 0:
+        indx2 += direc
+        t = b.subblossoms[indx2]
+        if direc == 1:
+            w, x = b.edges[indx2]
         else:
-            x, w = b.edges[j-1]
+            x, w = b.edges[indx2-1]
         if isinstance(t, Blossom):
             augment_blossom(t, w)
-        j += jstep
-        t = b.subblossoms[j]
+        indx2 += direc
+        t = b.subblossoms[indx2]
         if isinstance(t, Blossom):
             augment_blossom(t, x)
         (roommates[w], roommates[x]) = (x, w)
 
     # repositioning for new base
-    b.subblossoms = b.subblossoms[i:] + b.subblossoms[:i]
-    b.edges  = b.edges[i:]  + b.edges[:i]
+    b.subblossoms = b.subblossoms[indx1:] + b.subblossoms[:indx1]
+    b.edges  = b.edges[indx1:]  + b.edges[:indx1]
     bases[b] = bases[b.subblossoms[0]]

@@ -3,19 +3,19 @@
 def find_augmenting_path():
     pathfound = 0
     while 1:
-        while queue and not pathfound:
-            v = queue.pop()
+        while Svertexqueue and not pathfound:
+            v = Svertexqueue.pop()
             for w in G.neighbors(v):
                 if root[v] == root[w] or w == v:
                     continue
-                if (v, w) not in allowedge:
-                    kslack = slack(v, w)
+                if (v, w) not in zeroslack:
+                    kslack = edgeslack(v, w)
                     if kslack <= 0:
-                        allowedge[(v, w)] = allowedge[(w, v)] = True
-                if (v, w) in allowedge:
-                    if label.get(root[w]) is None:
+                        zeroslack[(v, w)] = zeroslack[(w, v)] = True
+                if (v, w) in zeroslack:
+                    if lbl.get(root[w]) is None:
                         assign_label(w, 2, v)
-                    elif label.get(root[w]) == 1:
+                    elif lbl.get(root[w]) == 1:
                         base = find_augmenting_path2(v, w)
                         if base is not Dummy:
                             construct_blossom(base, v, w)
@@ -23,74 +23,74 @@ def find_augmenting_path():
                             augment_matching(v, w)
                             pathfound = 1
                             break
-                    elif label.get(w) is None:
-                        label[w] = 2
-                        labeledge[w] = (v, w)
-                elif label.get(root[w]) == 1:
-                    if bestedge.get(root[v]) is None or kslack < slack(*bestedge[root[v]]):
-                        bestedge[root[v]] = (v, w)
-                elif label.get(w) is None:
-                    if bestedge.get(w) is None or kslack < slack(*bestedge[w]):
-                        bestedge[w] = (v, w)
+                    elif lbl.get(w) is None:
+                        lbl[w] = 2
+                        elbl[w] = (v, w)
+                elif lbl.get(root[w]) == 1:
+                    if leastslack.get(root[v]) is None or kslack < edgeslack(*leastslack[root[v]]):
+                        leastslack[root[v]] = (v, w)
+                elif lbl.get(w) is None:
+                    if leastslack.get(w) is None or kslack < edgeslack(*leastslack[w]):
+                        leastslack[w] = (v, w)
         if pathfound:
             break
 
-        # tracker of the occurence of the minimum delta
-        deltatype = 1
+        # tracker of the occurence of the min track
+        tracker = 1
 
         # minimum of the dual variables corresponding to the vertices
-        delta = min(vdual.values())
-        deltaedge = deltablossom = None
+        track = min(vdual.values())
+        etracker = btracker = None
 
         # minimum edge slack between S-vertex and free vertex
         for v in G.nodes:
-            if label.get(root[v]) is None and bestedge.get(v) is not None:
-                d = slack(*bestedge[v])
-                if deltatype == -1 or d < delta:
-                    delta = d
-                    deltatype = 2
-                    deltaedge = bestedge[v]
+            if lbl.get(root[v]) is None and leastslack.get(v) is not None:
+                d = edgeslack(*leastslack[v])
+                if tracker == -1 or d < track:
+                    track = d
+                    tracker = 2
+                    etracker = leastslack[v]
 
         # minimum edge slack between any two S-blossoms
         for b in parents:
-            if (parents[b] is None and label.get(b) == 1 and bestedge.get(b) is not None):
-                kslack = slack(*bestedge[b])
+            if (parents[b] is None and lbl.get(b) == 1 and leastslack.get(b) is not None):
+                kslack = edgeslack(*leastslack[b])
                 d = kslack / 2
-                if deltatype == -1 or d < delta:
-                    delta = d
-                    deltatype = 3
-                    deltaedge = bestedge[b]
+                if tracker == -1 or d < track:
+                    track = d
+                    tracker = 3
+                    etracker = leastslack[b]
 
         # minimum dual variable corresponding to a T-blossom
         for b in bdual:
-            if (parents[b] is None and label.get(b) == 2 and (deltatype == -1 or bdual[b] < delta)):
-                delta = bdual[b]
-                deltatype = 4
-                deltablossom = b
+            if (parents[b] is None and lbl.get(b) == 2 and (tracker == -1 or bdual[b] < track)):
+                track = bdual[b]
+                tracker = 4
+                btracker = b
 
         # maximum cardinality attained
-        if deltatype == -1:
-            deltatype = 1
-            delta = max(0, min(vdual.values()))
+        if tracker == -1:
+            tracker = 1
+            track = max(0, min(vdual.values()))
 
         # update dual program variables
-        for v in gnodes:
+        for v in G.nodes:
             vdual[v] = {None: lambda x:x,
-                          1: lambda x: x-delta,
-                          2: lambda x: x+delta}[label.get(root[v])](vdual[v])
+                          1: lambda x: x-track,
+                          2: lambda x: x+track}[lbl.get(root[v])](vdual[v])
         for b in bdual:
             if parents[b] is None:
                 bdual[b] = {None: lambda x:x,
-                                  1: lambda x: x+delta,
-                                  2: lambda x: x-delta}[label.get(b)](bdual[b])
+                                  1: lambda x: x+track,
+                                  2: lambda x: x-track}[lbl.get(b)](bdual[b])
 
-        # switch statement for the occurence of the minimum delta
-        if deltatype == 1: 
+        # switch statement for the occurence of the min track
+        if tracker == 1: 
             break
-        elif deltatype == 2 or deltatype == 3:
-            (v, w) = deltaedge
-            allowedge[(v, w)] = allowedge[(w, v)] = True
-            queue.append(v)
-        elif deltatype == 4:
-            lift_blossom(deltablossom, False)
+        elif tracker == 2 or tracker == 3:
+            (v, w) = etracker
+            zeroslack[(v, w)] = zeroslack[(w, v)] = True
+            Svertexqueue.append(v)
+        elif tracker == 4:
+            lift_blossom(btracker, False)
     return pathfound

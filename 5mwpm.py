@@ -1,7 +1,8 @@
 from itertools import repeat
 import copy, sys, csv, os
 
-csv_f = csv.reader(open('matchingdata.csv'))
+data = open('matchingdata.csv')
+csv_f = csv.reader(data)
 n = int(csv_f.next()[0])
 
 students = []
@@ -35,16 +36,13 @@ for i in xrange(0, n):
         score = calculateScore(scores[students[i]], scores[students[j]])
         G.add_edge(students[i],students[j],score)
 
-# vertex list
-gnodes = G.nodes
-
 # None for no label
 # 1 for S-blossom
 # 2 for T-blossom
-label = {}
+lbl = {}
 
 # edge through which blossom attained its label
-labeledge = {}
+elbl = {}
 
 # every vertex is first its own root
 root = {}
@@ -56,7 +54,7 @@ parents = {}
 bases = {}
 
 # least slack edge to a different S-vertex or blossom
-bestedge = {}
+leastslack = {}
 
 # vertex's corresponding variable in the dual program
 vdual = {}
@@ -65,10 +63,10 @@ vdual = {}
 bdual = {}
 
 # edges with zero slack
-allowedge = {}
+zeroslack = {}
 
 # queue of newly discovered S-vertices.
-queue = []
+Svertexqueue = []
 
 # maximum edge weight.
 maxweight = 0
@@ -81,7 +79,7 @@ for k in G.edges:
     if weight > maxweight:
         maxweight = weight
 
-for v in gnodes:
+for v in G.nodes:
     root[v] = v
     parents[v] = None
     bases[v] = v
@@ -97,16 +95,16 @@ class Blossom:
     # leastslackedges: list of least slack edges to S-blossom neighbors
     __slots__ = ['subblossoms', 'edges', 'leastslackedges']
 
-    def leaves(self):
+    def lvertices(self):
         for t in self.subblossoms:
             if isinstance(t, Blossom):
-                for v in t.leaves():
+                for v in t.lvertices():
                     yield v
             else:
                 yield t
 
 # replace with proper directories as necessary
-execfile("roommateproblem/slack.py")
+execfile("roommateproblem/edgeslack.py")
 execfile("roommateproblem/assignlabel.py")
 execfile("roommateproblem/constructblossom.py")
 execfile("roommateproblem/liftblossom.py")
@@ -117,6 +115,10 @@ execfile("roommateproblem/findaugmentingpath.py")
 execfile("roommateproblem/findmaximummatching.py")
 
 find_maximum_matching()
+
+print "\nAssignment:"
 for key in sorted(roommates.keys()):
     print key + " <--> " + roommates[key]
+
+data.close()
 os.system("python menu.py")
