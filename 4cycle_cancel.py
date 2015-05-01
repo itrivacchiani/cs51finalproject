@@ -1,5 +1,5 @@
 import copy, sys, csv, os
-import 9edmond_karp
+import edmond_karp
 
 # Bellman-Ford for detecting negative cycles for use in Cycle-Cancelling alg
 # if no negative cycles, return None
