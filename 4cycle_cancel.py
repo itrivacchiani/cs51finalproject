@@ -48,7 +48,7 @@ def cycle_cancel(G, source, sink):
 	n = len(G)
 
 	# find feasible maxflow
-	F, maxflow, matching = 9edmond_karp.edmonds_karp(G, source, sink)
+	F, maxflow, matching = edmond_karp.edmonds_karp(G, source, sink)
 
 	# convert flow graph the from the maxflow to a residual graph
 	# remove used flow edges in F
@@ -123,7 +123,8 @@ numVertices = int(csv_f.next()[0])
 graph = [{} for i in xrange(numVertices)]
 vertexnames = csv_f.next()[0].split(' ')
 
-for i in xrange(numVertices):
+# sink 
+for i in xrange(numVertices-1):
 	vertexname = csv_f.next()[0]
 	vertexindex = vertexnames.index(vertexname)
 	s1 = csv_f.next()[0]
