@@ -73,7 +73,7 @@ def cycle_cancel(G, source, sink):
 	n = len(G)
 
 	# feasible flow
-	F, maxflow = edmonds_karp(G, source, sink)
+	F, maxflow, matching = edmonds_karp(G, source, sink)
 
 	# remove used flow edges in F
 	for u in xrange(n):
@@ -139,21 +139,12 @@ def cycle_cancel(G, source, sink):
 
 	return maxflow, cost, assignment
 
+# Testing
 
-g = [{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,50)},{6: (2,0)},{6:(1,0)},{0: (1,0), 1: (1,0), 2: (1,0)},{}]
+# g = [{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,50)},{6: (2,0)},{6:(1,0)},{0: (1,0), 1: (1,0), 2: (1,0)},{}]
 
-maxflow, cost, assignment = cycle_cancel(g, 5, 6)
+# maxflow, cost, assignment = cycle_cancel(g, 5, 6)
 
-print maxflow
-print cost
-print assignment
-
-# F, m = edmonds_karp(g, 5, 6)
-# # testing
-# print m
-# for i in xrange(len(F)):
-# 	print F[i]
-
-# resG = cycle_cancel(g, 5, 6)
-# for u in resG:
-# 	print u
+# print maxflow
+# print cost
+# print assignment

@@ -6,7 +6,7 @@ def bfs(G, F, source, sink):
 	while queue:
 		u = queue.pop(0)
 		for v in G[u].keys():
-			if G[u][v][0] - F[u][v] > 0 and v not in paths:
+			if G[u][v][0] - F[u][v][0] > 0 and v not in paths:
 				paths[v] = paths[u] + [(u,v)]
 				if v == sink:
 					return paths[v]
@@ -22,7 +22,7 @@ def bfs(G, F, source, sink):
 # matching in U, and B is the part of the MIS in V
 def edmonds_karp(G, source, sink):
 	n = len(G) # C is the capacity matrix
-	F = [[0] * n for i in xrange(n)]
+	F = [[(0,0)] * n for i in xrange(n)]
 	# residual capacity from u to v is C[u][v] - F[u][v]
 
 	# keep augmenting paths from source until there is no path from it to sink
@@ -31,25 +31,24 @@ def edmonds_karp(G, source, sink):
 		if not path:
 			break
 		# traverse path to find smallest capacity
-		flow = min(G[u][v][0] - F[u][v] for u,v in path)
+		flow = min(G[u][v][0] - F[u][v][0] for u,v in path)
 		# traverse path to update flow
 		for u,v in path:
-			F[u][v] += flow
-			F[v][u] -= flow
+			F[u][v] = (F[u][v][0] + flow, G[u][v][1])
+			F[v][u] = (F[v][u][0] - flow, -G[u][v][1])
+
+	maxflow = sum(F[source][i][0] for i in xrange(n))
+	maxcap = sum(G[source][i][0] for i in G[source].keys())
 
 	# find pairings
 	matching = {}
-	A = []
-	B = []
 	for u in F[source]:
 		if F[source][u] > 0:
-			A.append[u]
 			for v in F[u]:
 				if F[u][v] > 0:
 					matching[v] = u
-					B.append[v]
 					break
-	return (matching, A, B)
+	return (F, maxflow, matching)
 
 # Hopcroft-Karp for max cardinality bipartite matching
 # The output is a triple (M,A,B) where M is a dictionary mapping
@@ -122,31 +121,3 @@ def hopcroft_karp(graph):
 			return 0
 
 		for v in unmatched: recurse(v)
-
-# TODO this is only necessary for successive shortest paths
-# Dijkstra's shortest paths for a modified Hungarian algorithm
-# returns a path of least cost from source to sink, given as a list of
-# edges (u, v)
-def dijkstra(G, F, source, sink):
-	# number of vertices
-	n = len(G)
-	# initialize
-	dist = [sys.maxint for i in xrange(n)]
-	paths = {source: []}
-	dist[source] = 0
-	# priority queue as a dictionary
-	heap = {source: 0}
-	# keep approximating distance until all paths tried
-	while heap:
-		u = min(heap, key=heap.get)
-		del heap[u]
-		for v in G[u].keys():
-			if G[u][v][0] - F[u][v] > 0:
-				tempdist = sys.maxint
-				if dist[u] != sys.maxint:
-					tempdist = dist[u] + G[u][v][1]
-				if dist[v] > tempdist:
-					dist[v] = tempdist
-					paths[v] = paths[u] + [(u,v)]
-					heap[v] = dist[v]
-	return paths[sink]
