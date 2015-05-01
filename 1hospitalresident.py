@@ -12,7 +12,7 @@ if (problem != "stable marriage" and problem != "hospital resident"):
 	else:
 		print("\n\npreferences.csv does not indicate a possible problem.")
 		print("Please change the problem name in preferences.csv to \nstable marriage, hospital resident, or stable roommates.")
-		print("Then make the appropriate problem choice.")
+		print("Exiting to menu.")
 	os.system("python menu.py")
 
 marriage = (problem == "stable marriage")
@@ -21,11 +21,11 @@ num_hosp = int(csv_f.next()[0])
 
 resident_prefs = {}
 hospital_prefs = {}
-for i in xrange(0,num_res):
+for i in xrange(num_res):
 	s1 = csv_f.next()[0]
 	s2 = csv_f.next()[0]
 	resident_prefs[s1] = s2.split(' ')
-for i in xrange(0,num_hosp):
+for i in xrange(num_hosp):
 	s1 = csv_f.next()[0]
 	s2 = csv_f.next()[0]
 	if marriage:

@@ -13,7 +13,12 @@ def directorylist_python(dirAddress):
 
 directoryList = directorylist_python(directoryAddress)
 directoryList.remove("menu.py")
-problemNames = ["Hospital Resident or Stable Marriage", "Stable Roommates"]
+problemNames = ["Hospital Resident or Stable Marriage", \
+				"Stable Roommates", \
+				"Maximum Cardinality Bipartite Matching", \
+				"Min Cost Max Flow"]
+directoryList.sort()
+print directoryList
 
 print("\n\nMENU for CS51 Final Project\n")
 
