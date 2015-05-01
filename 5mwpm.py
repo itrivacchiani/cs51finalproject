@@ -1,5 +1,5 @@
 from itertools import repeat
-import copy, sys, csv
+import copy, sys, csv, os
 
 csv_f = csv.reader(open('matchingdata.csv'))
 n = int(csv_f.next()[0])
@@ -119,3 +119,4 @@ execfile("roommateproblem/findmaximummatching.py")
 find_maximum_matching()
 for key in sorted(roommates.keys()):
     print key + " gets matched with " + roommates[key]
+os.system("python menu.py")

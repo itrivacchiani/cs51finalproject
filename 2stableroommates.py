@@ -166,9 +166,9 @@ def phaseII():
 # output of the matching results (or that no matching is possible)
 if not phaseI() or not phaseII():
   print("There is no stable rooming situation")
-  os.system("python menu.py")
 else:   
   print("\n Rooming Results \n")
   for k in best.keys():
     print("Person: %s" % k)
     print("Best Roommate Match: %s \n" % best[k])
+os.system("python menu.py")
