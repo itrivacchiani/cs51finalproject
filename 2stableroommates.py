@@ -23,10 +23,6 @@ for i in xrange(0, num_roommates):
   s2 = csv_f.next()[0]
   people[s1] = s2.split(' ')
 
-for k in people.keys():
-  print("%s "%k)
-  for x in people[k]:
-    print("%s"%x)
 
 def fillRank(people):
   rank = {}
@@ -133,24 +129,26 @@ def phaseII():
         rightperson[leftperson[k]] = k
       for i in range(cycle2):
         if (leftrank[k] > rightrank[k]):
-          sol_possible = False 
+          solution_possible = False 
   return solution_found
 
-print("hi")
+print("%s"%(phaseI()))
+print("%s"%(phaseII()))
 
-if not phaseI:
+if not phaseI():
   print("There is no possible stable roommates arrangement")
   os.system("python menu.py")
 else:
-  if not phaseII:
+  if not phaseII():
     print("There is no solution.")
     os.system("python menu.py")
-  else:
-    print ("hi")
-    for i in cycle2:
-      print("%s" % i)
-    for i in cycle:
-      print("%s" % i)
-      print("hi")
+  else:   
+    print("%i"%len(leftperson))
+    for k in leftperson.keys():
+
+      print("Host")
+      print("%s" % k)
+      print("Preference")
+      print("%s" % leftperson[k])
 
 
