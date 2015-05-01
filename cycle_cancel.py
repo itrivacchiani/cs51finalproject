@@ -103,13 +103,3 @@ def cycle_cancel(G, source, sink):
 				assignment[u].append(v)
 
 	return maxflow, cost, assignment
-
-#Testing
-
-g = [{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,50)},{6: (2,0)},{6:(1,0)},{0: (1,0), 1: (1,0), 2: (1,0)},{}]
-
-maxflow, cost, assignment = cycle_cancel(g, 5, 6)
-
-print maxflow
-print cost
-print assignment

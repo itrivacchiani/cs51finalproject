@@ -1,14 +1,14 @@
 # Hopcroft-Karp for max cardinality bipartite matching
-# The output is a triple (M,A,B) where M is a dictionary mapping
-# members of V to their matches in U, A is the part of the maximum
-# independent set in U, and B is the part of the MIS in V
+# Outputs a dictionary mapping elements of the first list X to
+# ones in the second list Y
+# A is the matched elements from X; B is the matched elements from Y
 def hopcroft_karp(graph):
-	# source and sink nodes are irrelevant
-	graphSize = len(graph - 2)
+	# number of vertices, source and sink nodes are irrelevant
+	n = len(graph) - 2
 
-	# initialize greedy matching (redundant, but faster than full search)
+	# find a working matching, to fix later
 	matching = {}
-	for u in xrange(len(graphSize)):
+	for u in xrange(len(n)):
 		for v in graph[u].keys():
 			if v not in matching:
 				matching[v] = u
@@ -16,56 +16,54 @@ def hopcroft_karp(graph):
 
 	# try to correct the matching to have disjoint edges
 	while True:
-		# structure residual graph into layers
-		# pred[u] gives the neighbor in the previous layer for u in U
-		# preds[v] gives a list of neighbors in the previous layer for v in V
-		# unmatched gives a list of unmatched vertices in final layer of V, and
-		# is also used as a flag value for pred[u] when u is in the first layer
-		preds = {}
+		# residual graph is constructed in layers
+		# list of connected vertices from previous matching in Y
+		prevY = {}
+		# unmatched vertices in final matching of Y
 		unmatched = []
-		pred = dict([(u,unmatched) for u in xrange(graphSize)])
+		# connected vertices from previous matching
+		prevX = dict([(u,unmatched) for u in xrange(n)])
 		for v in matching:
-			del pred[matching[v]]
-		layer = list(pred)
+			del prevX[matching[v]]
+		layer = list(prevX)
 
-		# repeatedly extend layering structure by another pair of layers
+		# keep extending layering structure two at a time
 		while layer and not unmatched:
 			newLayer = {}
 			for u in layer:
 				for v in graph[u].keys():
-					if v not in preds:
+					if v not in prevY:
 						newLayer.setdefault(v,[]).append(u)
 			layer = []
 			for v in newLayer:
-				preds[v] = newLayer[v]
+				prevY[v] = newLayer[v]
 				if v in matching:
 					layer.append(matching[v])
-					pred[matching[v]] = v
+					prevX[matching[v]] = v
 				else:
 					unmatched.append(v)
 
-		# check if finished layering without finding any alternating paths
+		# check if done layering
 		if not unmatched:
 			unlayered = {}
-			for u in xrange(graphSize):
+			for u in xrange(n):
 				for v in graph[u].keys():
-					if v not in preds:
+					if v not in prevY:
 						unlayered[v] = None
-			return (matching,list(pred),list(unlayered))
+			return (matching,list(prevX),list(unlayered))
 
-		# recursively search backward through layers to find alternating paths
-		# recursion returns true if found path, false otherwise
+		# recursively check through remembered layers for alternating paths
 		def recurse(v):
-			if v in preds:
-				L = preds[v]
-				del preds[v]
+			if v in prevY:
+				L = prevY[v]
+				del prevY[v]
 				for u in L:
-					if u in pred:
-						pu = pred[u]
-						del pred[u]
-						if pu is unmatched or recurse(pu):
+					if u in prevX:
+						prevX_u = prevX[u]
+						del prevX[u]
+						if prevX_u is unmatched or recurse(prevX_u):
 							matching[v] = u
-							return 1
-			return 0
-
-		for v in unmatched: recurse(v)
+							return True
+			return False
+		for v in unmatched:
+			recurse(v)
