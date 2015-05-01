@@ -1,14 +1,16 @@
+import csv, os
+
 # Hopcroft-Karp for max cardinality bipartite matching
 # Outputs a dictionary mapping elements of the first list X to
 # ones in the second list Y
 # A is the matched elements from X; B is the matched elements from Y
 def hopcroft_karp(graph):
 	# number of vertices, source and sink nodes are irrelevant
-	n = len(graph) - 2
+	n = len(graph)
 
 	# find a working matching, to fix later
 	matching = {}
-	for u in xrange(len(n)):
+	for u in xrange(n):
 		for v in graph[u].keys():
 			if v not in matching:
 				matching[v] = u
@@ -67,3 +69,46 @@ def hopcroft_karp(graph):
 			return False
 		for v in unmatched:
 			recurse(v)
+
+
+#######################################################
+# I/O
+csv_f = csv.reader(open('bipartitegraph.csv'))
+
+problem = csv_f.next()[0].lower()
+# csv file does not correctly indicate stable marriage or 
+# hospital resident as the problem to be solved
+if problem != "maximum cardinality bipartite matching":
+	print "The problem indicated in graph.csv is not maximum cardinality bipartite matching\n"
+	print "Exiting to menu."
+	os.system("python menu.py")
+
+numVertices = int(csv_f.next()[0])
+# initialize graph
+graph = [{} for i in xrange(numVertices)]
+vertexnames = csv_f.next()[0].split(' ')
+
+# sink 
+for i in xrange(numVertices-1):
+	vertexname = csv_f.next()[0]
+	vertexindex = vertexnames.index(vertexname)
+	s1 = csv_f.next()[0]
+	s2 = csv_f.next()[0]
+	s3 = csv_f.next()[0]
+	neighborindices = [vertexnames.index(elt) for elt in s1.split(' ')]
+	neighborcaps = [int(elt) for elt in s2.split(' ')]
+	neighborcosts = [int(elt) for elt in s3.split(' ')]
+	for v in xrange(len(neighborindices)):
+		graph[vertexindex][neighborindices[v]] = (neighborcaps[v], neighborcosts[v])
+
+# assume source and sink already added, last two vertices
+source = numVertices - 2
+sink = source + 1
+
+matching, A, B = hopcroft_karp(graph)
+
+print "\nSolution:"
+for a in matching.keys():
+	print "%s <--> %s" % (vertexnames[a], vertexnames[matching[a]])
+
+os.system("python menu.py")

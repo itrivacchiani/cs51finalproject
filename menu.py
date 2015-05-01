@@ -16,9 +16,13 @@ directoryList.remove("menu.py")
 problemNames = ["Hospital Resident or Stable Marriage", \
 				"Stable Roommates", \
 				"Maximum Cardinality Bipartite Matching", \
+<<<<<<< HEAD
 				"Min Cost Max Flow", "something"]
+=======
+				"Min Cost Max Flow", \
+				"Max Flow"]
+>>>>>>> e48dcad240ae99e2e1fbc4c7ef7b27f430b2c77a
 directoryList.sort()
-print directoryList
 
 print("\n\nMENU for CS51 Final Project\n")
 
@@ -30,7 +34,4 @@ while counter < len(problemNames):
 problemNum = int(input("\nWhich problem would you like to solve? (Type a number.) "))
 problemFile = directoryList[problemNum - 1]
 
-if systemName == "darwin":
-	os.system("python " + problemFile)
-else:
-	os.system(problemFile)
+os.system("python " + problemFile)
