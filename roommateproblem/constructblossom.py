@@ -40,9 +40,9 @@ def construct_blossom(base, v, w):
                 nblist = bv.leastslackedges
                 bv.leastslackedges = None
             else:
-                nblist = [(v, w) for v in bv.leaves() for w in G.neighbors_iter(v) if v != w]
+                nblist = [(v, w) for v in bv.leaves() for w in G.neighbors(v) if v != w]
         else:
-            nblist = [(bv, w) for w in G.neighbors_iter(bv) if bv != w]
+            nblist = [(bv, w) for w in G.neighbors(bv) if bv != w]
         for k in nblist:
             (i, j) = k
             if root[j] == b:

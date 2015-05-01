@@ -5,7 +5,7 @@ def find_augmenting_path():
     while 1:
         while queue and not pathfound:
             v = queue.pop()
-            for w in G.neighbors_iter(v):
+            for w in G.neighbors(v):
                 if root[v] == root[w] or w == v:
                     continue
                 if (v, w) not in allowedge:
@@ -43,7 +43,7 @@ def find_augmenting_path():
         deltaedge = deltablossom = None
 
         # minimum edge slack between S-vertex and free vertex
-        for v in G.nodes_iter():
+        for v in G.nodes:
             if label.get(root[v]) is None and bestedge.get(v) is not None:
                 d = slack(*bestedge[v])
                 if deltatype == -1 or d < delta:
