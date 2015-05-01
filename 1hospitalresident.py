@@ -1,6 +1,6 @@
 import copy, sys, csv, os
 
-csv_f = csv.reader(open('preferences.csv'))
+csv_f = csv.reader(open('preferences.csv', 'rU'))
 
 problem = csv_f.next()[0].lower()
 # csv file does not correctly indicate stable marriage or 
@@ -32,6 +32,7 @@ for i in xrange(num_hosp):
 		hospital_prefs[s1] = (1, s2.split(' '))
 	else:
 		hospital_prefs[s1.split(' ')[0]] = (int(s1.split(' ')[1]), s2.split(' '))
+
 
 # Initialize all residents and hospitals to free
 resident_free = (resident_prefs.keys())[:]
@@ -81,7 +82,7 @@ while resident_free:
 print(" \n .......Final Results.......")
 for k,v in hospital_actual.items():
 	if marriage:
-		print("\n %s is married to %s" % (k,v[1]))
+		print("\n %s is married to %s" % (k,v[1][0]))
 	else:
 		print("\n Hospital of %s | Capacity of %s" % (k, v[0]))
 		print(" Residents:")
