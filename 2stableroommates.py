@@ -17,13 +17,16 @@ if (problem != "stable roommates" and problem != "stable roommate"):
 
 num_roommates = int(csv_f.next()[0])
 
+# fills in all the students from the csv file into
+# the people dictionary as keys
 people = {}
 for i in xrange(0, num_roommates):
   s1 = csv_f.next()[0]
   s2 = csv_f.next()[0]
   people[s1] = s2.split(' ')
 
-
+# generates a dictionary rank given the people dictionary
+# such that rank[y,x] is y's rank on x's list
 def fillRank(people):
   rank = {}
   for k in people.keys():
@@ -42,40 +45,46 @@ def GetPersonRank(x,i):
   y = people[x][i]
   r = rank[y][x]
   return (y,r)
-
-best = {} # current best roommate 'x' is currently proposing to
-bestrank = {} # rank of x's most feasible choice on x's list
-worst = {} # person whose proposal x has but isn't top choice
-worstrank = {} # rank of worst's in x's list
-holds_proposal = {} # boolean
-second = {} # the next best person that x would accept
-secondrank = {} # second's rank on x's list
-secondperception = {} # rank of x on second[x]'s preference list, 
-                      # ie. how second[x] perceives x
+# current best possible roommate 'x' is proposing to
+best = {} 
+# rank of x's most feasible roommate choice
+bestrank = {} 
+# person whose proposal x has but isn't x's top choice
+worst = {} 
+# rank of worst in x's list
+worstrank = {} 
+# boolean
+holds_proposal = {} 
+# the next best person that x would accept
+second = {}
+# second's rank on x's list 
+secondrank = {} 
+# rank of x on second[x]'s preference list, 
+# ie. how second[x] perceives x
+secondperception = {}                  
 
 # PhaseI creates plausible semi-matchings 
 # between roommates
 def phaseI(): 
-
-  # initialization
+  # initializing
   for k in people.keys():
     n = len(people.keys())
     holds_proposal[k] = False
     worst[k] = k 
     worstrank[k] = n
-    bestrank[k] = 0
+    bestrank[k] = 0 
   # creates semi-engagements (plausible matches)
   for k in people.keys():
     proposer = k
     while True: 
-      if bestrank[proposer] == len(people.keys()):
-          break
-      # next is the "best" person and rank is the perception
+      # next is the k's top choice, rank is best's perception of k
       (next, rank) = GetPersonRank(proposer, bestrank[proposer])
+      # next prefers its current match better than k
       while (rank > worstrank[next]):
+        # proposer must move on 
         bestrank[proposer] = bestrank[proposer] + 1 
-        # You've reached yourself in the bestrank :(, therefore forever alone
         (next, rank) = GetPersonRank(proposer, bestrank[proposer])
+      # previous proposed to next
       previous = worst[next]
       worstrank[next] = rank
       worst[next] = proposer
@@ -85,29 +94,38 @@ def phaseI():
         break 
     holds_proposal[next] = True
     if (bestrank[proposer] == n):
-      return False # can only be engaged to self, no stable match
-  return True # move onto phaseII, there may be stable match
+      # can only be engaged to self, no stable match
+      return False 
+  # move onto phaseII, there may be stable match
+  return True 
 
 cycle = []
 
+# finds the potential "rotations" for previous semi-matching
+# to be broken apart to form new matches 
 def seekCycle(): 
-
   for k in people.keys():
+    # find unmatched person
     if (bestrank[k] < worstrank[k]):
       break
+  # no unmatched person found -> return empty cycle, no work! 
   if (bestrank[k] >= worstrank[k]):
     return (0,0,"")
+  # unmatched person found
   else :
     last = 1 
     while True:
       cycle[last] = k
       last = last + 1 
       p = bestrank[k]
-      while True: 
+      while True:
+        # find second choice  
         p = p + 1 
         (y,r) = GetPersonRank(k,p)
+        # y would accept because k is higher in rank
         if (r <= worstrank[y]):
           break
+      # saving the second choice
       secondrank[k] = p
       second[k] = y
       secondperception[k] = r
@@ -116,10 +134,12 @@ def seekCycle():
         break 
     last = last - 1
     first = last - 1
+    # start cycle again
     while (cycle[first] != k):
       first = first - 1 
     return (first, last, cycle)
 
+# based on seekCycle results
 cycle2 = []
 
 def phaseII():
@@ -127,28 +147,28 @@ def phaseII():
   solution_found = False 
   while (solution_possible and not solution_found):
     (first, last, cycle) = seekCycle()
+    # stable rooming matches are already present
     if (cycle == ""):
       solution_found = True 
     else:
       cycle2 = cycle[first:last]
+      # executing the switches and new arrangements
       for i in range(cycle2):
         bestrank[k] = secondrank[k]
         worstrank[best[k]] = secondperception[k]
         worst[best[k]] = k
       for i in range(cycle2):
+        # gone through everybody, no stable match is possible
         if (bestrank[k] > worstrank[k]):
           solution_possible = False 
   return solution_found
 
-if not phaseI():
-  print("There is no possible stable roommates arrangement")
+# output of the matching results (or that no matching is possible)
+if not phaseI() or not phaseII():
+  print("There is no stable rooming situation")
   os.system("python menu.py")
-else:
-  if not phaseII():
-    print("There is no solution.")
-    os.system("python menu.py")
-  else:   
-    print("\n Rooming Results \n")
-    for k in best.keys():
-      print("Person: %s" % k)
-      print("Best Roommate Match: %s \n" % best[k])
+else:   
+  print("\n Rooming Results \n")
+  for k in best.keys():
+    print("Person: %s" % k)
+    print("Best Roommate Match: %s \n" % best[k])
