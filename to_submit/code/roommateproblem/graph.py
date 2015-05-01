@@ -1,3 +1,5 @@
+# graph class
+
 class Graph(object):
     nodes = []
     edges = []

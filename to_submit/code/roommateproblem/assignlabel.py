@@ -1,17 +1,20 @@
 # given vertices v, w and label t, assign t to the top-level blossom 
 # that contains w and comes through an edge from v
 def assign_label(w, t, v):
-    label[w] = label[root[w]] = t
+    lbl[w] = lbl[root[w]] = t
     if v is not None:
-        labeledge[w] = labeledge[root[w]] = (v, w)
+        elbl[w] = (v, w)
+        elbl[root[w]] = (v, w)
     else:
-        labeledge[w] = labeledge[root[w]] = None
-    bestedge[w] = bestedge[root[w]] = None
+        elbl[w] = None
+        elbl[root[w]] = None
+    leastslack[w] = None
+    leastslack[root[w]] = None
     if t == 1:
         if isinstance(root[w], Blossom):
-            queue.extend(root[w].leaves())
+            Svertexqueue.extend(root[w].lvertices())
         else:
-            queue.append(root[w])
+            Svertexqueue.append(root[w])
     elif t == 2:
         base = bases[root[w]]
         assign_label(roommates[base], 1, base)

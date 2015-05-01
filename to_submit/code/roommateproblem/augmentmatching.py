@@ -5,10 +5,10 @@ def augment_matching(v, w):
             if isinstance(root[s], Blossom):
                 augment_blossom(root[s], s)
             roommates[s] = t
-            if labeledge[root[s]] is None:
+            if elbl[root[s]] is None:
                 break
-            u = labeledge[root[s]][0]
-            s, t = labeledge[root[u]]
+            u = elbl[root[s]][0]
+            s, t = elbl[root[u]]
             if isinstance(root[u], Blossom):
                 augment_blossom(root[u], t)
             roommates[t] = s

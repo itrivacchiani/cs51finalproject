@@ -1,69 +1,67 @@
 # lifts a given toplevel blossom
-def lift_blossom(b, endstage):
+def lift_blossom(b, es):
     # iterate through subblossoms and convert them into toplevel blossoms
     for s in b.subblossoms:
         parents[s] = None
         if isinstance(s, Blossom):
-            if endstage and bdual[s] == 0:
-                lift_blossom(s, endstage)
+            if es and bdual[s] == 0:
+                lift_blossom(s, es)
             else:
-                for v in s.leaves():
+                for v in s.lvertices():
                     root[v] = s
         else:
             root[s] = s
 
     # relabeling subblossoms until reach base
-    if (not endstage) and label.get(b) == 2:
-        entrychild = root[labeledge[b][1]]
-        j = b.subblossoms.index(entrychild)
-        if j % 2 == 1:
-            j -= len(b.subblossoms)
-            jstep = 1
+    if (not es) and lbl.get(b) == 2:
+        ec = root[elbl[b][1]]
+        indx = b.subblossoms.index(ec)
+        if indx % 2 == 0:
+            direc = -1
         else:
-            jstep = -1
-        v, w = labeledge[b]
-        while j != 0:
-            if jstep == 1:
-                p, q = b.edges[j]
+            indx -= len(b.subblossoms)
+            direc = 1
+        v, w = elbl[b]
+        while indx != 0:
+            if direc == -1:
+                (q, p) = b.edges[indx-1]
             else:
-                q, p = b.edges[j-1]
-            label[w] = None
-            label[q] = None
+                (p, q) = b.edges[indx]
+            (lbl[w], lbl[q]) = (None, None)
             assign_label(w, 2, v)
-            allowedge[(p, q)] = allowedge[(q, p)] = True
-            j += jstep
-            if jstep == 1:
-                v, w = b.edges[j]
+            zeroslack[(p, q)] = zeroslack[(q, p)] = True
+            indx += direc
+            if direc == 1:
+                (v, w) = b.edges[indx]
             else:
-                w, v = b.edges[j-1]
-            allowedge[(v, w)] = allowedge[(w, v)] = True
-            j += jstep
-        bw = b.subblossoms[j]
-        label[w] = label[bw] = 2
-        labeledge[w] = labeledge[bw] = (v, w)
-        bestedge[bw] = None
-        j += jstep
-        while b.subblossoms[j] != entrychild:
-            bv = b.subblossoms[j]
-            if label.get(bv) == 1:
-                j += jstep
+                (w, v) = b.edges[indx-1]
+            zero[(v, w)] = zeroslack[(w, v)] = True
+            indx += direc
+        subx = b.subblossoms[indx]
+        elbl[w] = (v, w)
+        elbl[subx] = (v, w)
+        lbl[w] = 2
+        lbl[subx] = 2
+        leastslack[subx] = None
+        indx += direc
+        while b.subblossoms[indx] != ec:
+            subx2 = b.subblossoms[indx]
+            if lbl.get(subx2) == 1:
+                indx += direc
                 continue
-            if isinstance(bv, Blossom):
-                for v in bv.leaves():
-                    if label.get(v):
+            if isinstance(subx2, Blossom):
+                for v in subx2.lvertices():
+                    if lbl.get(v):
                         break
             else:
-                v = bv
-            if label.get(v):
-                label[v] = None
-                label[roommates[bases[bv]]] = None
-                assign_label(v, 2, labeledge[v][0])
-            j += jstep
+                v = subx2
+            if lbl.get(v):
+                (lbl[v], lbl[roommates[bases[subx2]]]) = (None, None)
+                assign_label(v, 2, elbl[v][0])
+            indx += direc
 
     # gets rid of lifted blossom
-    label.pop(b, None)
-    labeledge.pop(b, None)
-    bestedge.pop(b, None)
-    del parents[b]
-    del bases[b]
-    del bdual[b]
+    lbl.pop(b, None)
+    elbl.pop(b, None)
+    leastslack.pop(b, None)
+    del parents[b], bases[b], bdual[b]
