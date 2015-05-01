@@ -118,5 +118,5 @@ execfile("roommateproblem/findmaximummatching.py")
 
 find_maximum_matching()
 for key in sorted(roommates.keys()):
-    print key + " gets matched with " + roommates[key]
+    print key + " <--> " + roommates[key]
 os.system("python menu.py")
