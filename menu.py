@@ -13,7 +13,6 @@ def directorylist_python(dirAddress):
 
 directoryList = directorylist_python(directoryAddress)
 directoryList.remove("menu.py")
-directoryList.remove("graph_matching.py")
 problemNames = ["Hospital Resident or Stable Marriage", "Stable Roommates"]
 
 print("\n\nMENU for CS51 Final Project\n")
