@@ -93,13 +93,9 @@ for i in xrange(numVertices-1):
 	vertexname = csv_f.next()[0]
 	vertexindex = vertexnames.index(vertexname)
 	s1 = csv_f.next()[0]
-	s2 = csv_f.next()[0]
-	s3 = csv_f.next()[0]
 	neighborindices = [vertexnames.index(elt) for elt in s1.split(' ')]
-	neighborcaps = [int(elt) for elt in s2.split(' ')]
-	neighborcosts = [int(elt) for elt in s3.split(' ')]
 	for v in xrange(len(neighborindices)):
-		graph[vertexindex][neighborindices[v]] = (neighborcaps[v], neighborcosts[v])
+		graph[vertexindex][neighborindices[v]] = (0,0)
 
 # assume source and sink already added, last two vertices
 source = numVertices - 2

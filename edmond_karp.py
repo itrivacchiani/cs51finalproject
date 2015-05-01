@@ -70,7 +70,7 @@ numVertices = int(csv_f.next()[0])
 graph = [{} for i in xrange(numVertices)]
 vertexnames = csv_f.next()[0].split(' ')
 
-# sink 
+# sink
 for i in xrange(numVertices-1):
 	vertexname = csv_f.next()[0]
 	vertexindex = vertexnames.index(vertexname)
