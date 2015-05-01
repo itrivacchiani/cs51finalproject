@@ -1,40 +1,5 @@
-# cycle cancel attempt 2
-
 import sys
-
-def bfs(G, F, source, sink):
-	queue = [source]
-	paths = {source: []}
-	while queue:
-		u = queue.pop(0)
-		for v in G[u].keys():
-			if G[u][v][0] - F[u][v][0] > 0 and v not in paths:
-				paths[v] = paths[u] + [(u,v)]
-				if v == sink:
-					return paths[v]
-				queue.append(v)
-	return None
-
-def edmonds_karp(G, source, sink):
-	n = len(G) # C is the capacity matrix
-	F = [[(0,0)] * n for i in xrange(n)]
-	# residual capacity from u to v is C[u][v] - F[u][v]
-
-	# keep augmenting paths from source until there is no path from it to sink
-	while True:
-		path = bfs(G, F, source, sink)
-		if not path:
-			break
-		# traverse path to find smallest capacity
-		flow = min(G[u][v][0] - F[u][v][0] for u,v in path)
-		# traverse path to update flow
-		for u,v in path:
-			F[u][v] = (F[u][v][0] + flow, G[u][v][1])
-			F[v][u] = (F[v][u][0] - flow, -G[u][v][1])
-
-	maxflow = sum(F[source][i][0] for i in xrange(n))
-	maxcap = sum(G[source][i][0] for i in G[source].keys())
-	return (F, maxflow)
+import edmond_karp
 
 def bellman_ford(graph, source):
 	# number of vertices
@@ -73,7 +38,7 @@ def cycle_cancel(G, source, sink):
 	n = len(G)
 
 	# feasible flow
-	F, maxflow, matching = edmonds_karp(G, source, sink)
+	F, maxflow, matching = edmond_karp.edmonds_karp(G, source, sink)
 
 	# remove used flow edges in F
 	for u in xrange(n):
@@ -139,12 +104,12 @@ def cycle_cancel(G, source, sink):
 
 	return maxflow, cost, assignment
 
-# Testing
+#Testing
 
-# g = [{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,50)},{6: (2,0)},{6:(1,0)},{0: (1,0), 1: (1,0), 2: (1,0)},{}]
+g = [{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,2)},{3: (1,1), 4: (1,50)},{6: (2,0)},{6:(1,0)},{0: (1,0), 1: (1,0), 2: (1,0)},{}]
 
-# maxflow, cost, assignment = cycle_cancel(g, 5, 6)
+maxflow, cost, assignment = cycle_cancel(g, 5, 6)
 
-# print maxflow
-# print cost
-# print assignment
+print maxflow
+print cost
+print assignment
