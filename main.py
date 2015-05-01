@@ -105,15 +105,15 @@ class Blossom:
                 yield t
 
 # replace with proper directories as necessary
-execfile("/Users/johngee/Documents/testing/slack.py")
-execfile("/Users/johngee/Documents/testing/assignlabel.py")
-execfile("/Users/johngee/Documents/testing/constructblossom.py")
-execfile("/Users/johngee/Documents/testing/liftblossom.py")
-execfile("/Users/johngee/Documents/testing/augmentblossom.py")
-execfile("/Users/johngee/Documents/testing/augmentmatching.py")
-execfile("/Users/johngee/Documents/testing/findaugmentingpath2.py")
-execfile("/Users/johngee/Documents/testing/findaugmentingpath.py")
-execfile("/Users/johngee/Documents/testing/findmaximummatching.py")
+execfile("roommateproblem/slack.py")
+execfile("roommateproblem/assignlabel.py")
+execfile("roommateproblem/constructblossom.py")
+execfile("roommateproblem/liftblossom.py")
+execfile("roommateproblem/augmentblossom.py")
+execfile("roommateproblem/augmentmatching.py")
+execfile("roommateproblem/findaugmentingpath2.py")
+execfile("roommateproblem/findaugmentingpath.py")
+execfile("roommateproblem/findmaximummatching.py")
 
 find_maximum_matching()
 for key in sorted(roommates.keys()):
