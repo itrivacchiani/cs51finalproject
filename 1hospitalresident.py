@@ -1,6 +1,6 @@
 import copy, sys, csv, os
 
-csv_f = csv.reader(open('preferences.csv'))
+csv_f = csv.reader(open('preferences.csv', 'rU'))
 
 problem = csv_f.next()[0].lower()
 # csv file does not correctly indicate stable marriage or 

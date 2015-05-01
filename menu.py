@@ -16,7 +16,7 @@ directoryList.remove("menu.py")
 problemNames = ["Hospital Resident or Stable Marriage", \
 				"Stable Roommates", \
 				"Maximum Cardinality Bipartite Matching", \
-				"Min Cost Max Flow"]
+				"Min Cost Max Flow", "something"]
 directoryList.sort()
 print directoryList
 
