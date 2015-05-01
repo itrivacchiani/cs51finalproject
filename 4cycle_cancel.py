@@ -113,7 +113,7 @@ csv_f = csv.reader(open('graph.csv'))
 problem = csv_f.next()[0].lower()
 # csv file does not correctly indicate stable marriage or 
 # hospital resident as the problem to be solved
-if problem != "min cost max flow":
+if problem != "flow graph":
 	print "The problem indicated in graph.csv is not min cost max flow\n"
 	print "Exiting to menu."
 	os.system("python menu.py")
