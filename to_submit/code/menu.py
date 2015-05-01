@@ -13,6 +13,7 @@ def directorylist_python(dirAddress):
 
 directoryList = directorylist_python(directoryAddress)
 directoryList.remove("menu.py")
+directoryList.remove("edmond_karp.py")
 problemNames = ["Hospital Resident or Stable Marriage", \
 				"Stable Roommates", \
 				"Maximum Cardinality Bipartite Matching", \
@@ -29,7 +30,9 @@ while counter < len(problemNames):
 	print("("+str(counter+1)+") " + problemNames[counter])
 	counter += 1
 
-problemNum = int(input("\nWhich problem would you like to solve? (Type a number.) "))
+problemNum = int(input("\nWhich problem would you like to solve? (Enter a number, -1 to quit) "))
+if problemNum == -1:
+	sys.exit()
 problemFile = directoryList[problemNum - 1]
 
 os.system("python " + problemFile)
